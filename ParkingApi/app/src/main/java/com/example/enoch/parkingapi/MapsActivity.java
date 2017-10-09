@@ -3,8 +3,6 @@ package com.example.enoch.parkingapi;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.enoch.parkingapi.data.AppDataManager;
 import com.example.enoch.parkingapi.model.ParkingModel;
@@ -29,6 +27,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private ParkingListPresenter<IParkingListMvpView> parkingListMvpViewParkingListPresenter;
+
+    List<ParkingModel> parkingModels;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,32 +57,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter(){
-
-
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-
-                View v = getLayoutInflater().inflate(R.layout.info_window,null);
-
-                TextView name = (TextView)v.findViewById(R.id.name);
-                TextView minTime = (TextView)v.findViewById(R.id.minTime);
-                TextView maxTime = (TextView)v.findViewById(R.id.maxTime);
-                TextView cost = (TextView)v.findViewById(R.id.cost);
-
-                LatLng ll = marker.getPosition();
 
 
 
-                return null;
+
+
                 //return v;
-            }
-        });
+
+
        /* // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -97,7 +80,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onFetchDataCompleted(List<ParkingModel> parkingModels) {
 
 
-        Log.i("test", parkingModels.get(0).getName());
+        mMap.setInfoWindowAdapter(new CustomInfoAdapter(parkingModels));
+
+
         for (int i = 0; i < parkingModels.size(); i++) {
 
 
@@ -108,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (parkingModels.get(i).getIsReserved() == true) {
                 Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(SanFran)
-                        .title(parkingModels.get(i).getName())
+                        .title(String.valueOf(i))
                         .snippet("Maximum time : " +parkingModels.get(i).getMaxReserveTimeMins().toString())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
@@ -117,8 +102,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // mMap.moveCamera(CameraUpdateFactory.newLatLng(SanFran));
             } else {
                 Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(SanFran).title(parkingModels.get(i).getName())
-                        .snippet(parkingModels.get(i).getIsReserved().toString())
+                        .position(SanFran).title(String.valueOf(i))
+                        .snippet("Maximum time : " +parkingModels.get(i).getMaxReserveTimeMins().toString())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
 
