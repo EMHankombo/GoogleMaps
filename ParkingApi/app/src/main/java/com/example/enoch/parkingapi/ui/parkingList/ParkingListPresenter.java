@@ -7,6 +7,8 @@ import com.example.enoch.parkingapi.ui.utils.rx.SchedulerProvider;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -17,6 +19,7 @@ import io.reactivex.functions.Consumer;
 
 public class ParkingListPresenter <V extends IParkingListMvpView> extends BasePresenter<V> implements IParkingListMvpPresenter<V> {
 
+    @Inject
     public ParkingListPresenter(DataManager dataManager, SchedulerProvider schedulerProvider, CompositeDisposable compositeDisposable) {
         super(dataManager, schedulerProvider, compositeDisposable);
     }

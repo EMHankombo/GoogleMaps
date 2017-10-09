@@ -4,11 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.example.enoch.parkingapi.data.AppDataManager;
+import com.example.enoch.parkingapi.di.component.DaggerIActivityComponent;
+import com.example.enoch.parkingapi.di.component.IActivityComponent;
+import com.example.enoch.parkingapi.model.ActivityModule;
 import com.example.enoch.parkingapi.model.ParkingModel;
 import com.example.enoch.parkingapi.ui.parkingList.IParkingListMvpView;
 import com.example.enoch.parkingapi.ui.parkingList.ParkingListPresenter;
-import com.example.enoch.parkingapi.ui.utils.rx.AppSchedulerProvider;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,13 +21,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
-import io.reactivex.disposables.CompositeDisposable;
+import javax.inject.Inject;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IParkingListMvpView {
 
     private GoogleMap mMap;
 
-    private ParkingListPresenter<IParkingListMvpView> parkingListMvpViewParkingListPresenter;
+    IActivityComponent iActivityComponent;
+
+    public IActivityComponent getiActivityComponent() {
+        return iActivityComponent;
+    }
+
+    @Inject
+     ParkingListPresenter<IParkingListMvpView> parkingListMvpViewParkingListPresenter;
 
     List<ParkingModel> parkingModels;
 
@@ -39,6 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
 
 
     }
@@ -59,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
+        initialaseDagger();
 
 
                 //return v;
@@ -70,9 +80,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         **/
-        parkingListMvpViewParkingListPresenter = new ParkingListPresenter<>(new AppDataManager(), new AppSchedulerProvider(), new CompositeDisposable());
+       // parkingListMvpViewParkingListPresenter = new ParkingListPresenter<>(new AppDataManager(), new AppSchedulerProvider(), new CompositeDisposable());
         parkingListMvpViewParkingListPresenter.onAttach(this);
         parkingListMvpViewParkingListPresenter.onViewPrepared();
+
+    }
+
+
+    public  void initialaseDagger(){
+        iActivityComponent= DaggerIActivityComponent.builder()
+                .activityModule(new ActivityModule(this))
+                .iApplicationComponent(((MyApp)getApplication()).getiApplicationComponent())
+                .build();
+
+        getiActivityComponent().inject(this);
 
     }
 
